@@ -1,6 +1,6 @@
 const inquirer = require('inquirer');
-// const fs = require('fs');
-// const generatePage = require('./src/page-template.js');
+const fs = require('fs');
+const generatePage = require('./src/page-template.js');
 
 // console.log(inquirer);
 
@@ -27,7 +27,7 @@ const promptUser = () => {
         {
             type: 'confirm',
             name: 'confirmAbout',
-            message: 'Would you like to eneter some information about yourself for an "About" section?',
+            message: 'Would you like to enter some information about yourself for an "About" section?',
             default: true
         },
         {
@@ -57,13 +57,30 @@ Add a New Project
         {
             type: 'input',
             name: 'description',
-            message: 'Provide a description of the project (Required)'
+            message: 'Provide a description of the project (Required)',
+            validate: descriptionInput => {
+                if(!descriptionInput)
+                    console.log('You need to enter a project description!');
+                
+                return descriptionInput ? true : false;
+            }
         },
         {
             type: 'checkbox',
             name: 'languages',
             message: 'What did you build this project with? (Check all that apply)',
             choices: ['JavaScript','HTML','CSS','ES6','jQuery','Bootstrap','Node']
+        },
+        {
+            type: 'input',
+            name: 'link',
+            message: 'Enter the GitHub link to your project. (Required)',
+            validate: linkInput => {
+                if(!linkInput) 
+                    console.log('You need to enter a project GitHub link')
+                
+                return linkInput ? true : false;
+            }
         },
         {
             type: 'confirm',
@@ -74,7 +91,7 @@ Add a New Project
         {
             type: 'confirm',
             name: 'confirmAddProject',
-            message: 'Would you like to enter anotehr project?',
+            message: 'Would you like to enter another project?',
             default: false
         }
     ]).then(projectData => {
@@ -88,10 +105,11 @@ Add a New Project
 };
 
 promptUser().then(promptProject)
-            .then(portfolioData => console.log(portfolioData));
+            .then(portfolioData => {
+                const pageHTML = generatePage(portfolioData);
 
-// fs.writeFile('index.html', generatePage(name, github), err => {
-//     if(err) throw err;
+                fs.writeFile('./index.html', pageHTML, err => {
+                    if(err) throw err;
+                });
+            });
 
-//     console.log('Portfolio complete! Check out index.html to see the output!')
-// });
