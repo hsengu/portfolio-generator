@@ -1,4 +1,6 @@
 const inquirer = require('inquirer');
+// const fs = require('fs');
+// const generatePage = require('./src/page-template.js');
 
 // console.log(inquirer);
 
@@ -23,22 +25,29 @@ const promptUser = () => {
             message: 'Enter your GitHub Username'
         },
         {
+            type: 'confirm',
+            name: 'confirmAbout',
+            message: 'Would you like to eneter some information about yourself for an "About" section?',
+            default: true
+        },
+        {
             type: 'input',
             name: 'about',
-            message: 'Provide some information about yourself:'
+            message: 'Provide some information about yourself:',
+            when: ({confirmAbout}) => confirmAbout
         }
     ]);
 };
 
-const promptProject = () => {
-    if(!portfolioDta.projects) {
-        portfolioData.projects = [];
-    }
+const promptProject = portfolioData => {
     console.log(`
 =================
 Add a New Project
 =================
     `);
+    if(!portfolioData.projects) {
+        portfolioData.projects = [];
+    }
     return inquirer.prompt([
         {
             type: 'input',
@@ -78,11 +87,8 @@ Add a New Project
     });
 };
 
-promptUser().then(answers => console.log(answers))
-            .then(promptProject)
-            .then(projectAnswers => console.log(projectAnswers));
-// const fs = require('fs');
-// const generatePage = require('./src/page-template.js');
+promptUser().then(promptProject)
+            .then(portfolioData => console.log(portfolioData));
 
 // fs.writeFile('index.html', generatePage(name, github), err => {
 //     if(err) throw err;
